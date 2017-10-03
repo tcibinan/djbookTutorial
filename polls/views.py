@@ -1,6 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.views import generic
 from django.utils import timezone
 
@@ -35,6 +35,17 @@ class DetailView(generic.DetailView):
 class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
+
+
+class CreateView(generic.edit.CreateView):
+    model = Question
+    fields = ('question_text',)
+    template_name = 'polls/create.html'
+    success_url = reverse_lazy('polls:index')
+
+    def form_valid(self, form):
+        form.instance.pub_date = timezone.now()
+        return super(CreateView, self).form_valid(form)
 
 
 def vote(request, question_id):
